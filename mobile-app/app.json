@@ -1,0 +1,41 @@
+{
+  "expo": {
+    "name": "Parallel",
+    "slug": "circle-prototype",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/parallel-icon.png",
+    "scheme": "circlechat",
+    "userInterfaceStyle": "dark",
+    "ios": {
+      "icon": "./assets/expo.icon"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#080C10",
+        "foregroundImage": "./assets/images/parallel-mark.png",
+        "monochromeImage": "./assets/images/parallel-mark.png"
+      },
+      "predictiveBackGestureEnabled": false
+    },
+    "web": {
+      "output": "static",
+      "favicon": "./assets/images/parallel-icon.png"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#080C10",
+          "image": "./assets/images/parallel-mark.png",
+          "imageWidth": 110
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true,
+      "reactCompiler": true
+    }
+  }
+}
