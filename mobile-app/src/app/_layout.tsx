@@ -2,6 +2,7 @@ import { DarkTheme, Stack, ThemeProvider } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 
 import { palette } from '@/constants/theme';
+import '@/lib/livekit';
 import { AuthProvider } from '@/providers/auth-provider';
 
 const appTheme = {

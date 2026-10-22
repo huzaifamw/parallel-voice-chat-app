@@ -1,0 +1,7 @@
+{
+  "imports": {
+    "@livekit/protocol": "npm:@livekit/protocol@1.51.0",
+    "@supabase/supabase-js": "npm:@supabase/supabase-js@2.117.3",
+    "livekit-server-sdk": "npm:livekit-server-sdk@2.19.1"
+  }
+}
