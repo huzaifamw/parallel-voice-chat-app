@@ -7,12 +7,25 @@ param(
 )
 
 $ErrorActionPreference = 'Stop'
+
+function New-CryptographicBytes([int]$Length) {
+  $bytes = New-Object byte[] $Length
+  $generator = [Security.Cryptography.RandomNumberGenerator]::Create()
+  try {
+    $generator.GetBytes($bytes)
+  } finally {
+    $generator.Dispose()
+  }
+  return $bytes
+}
+
 $projectRoot = Split-Path -Parent $PSScriptRoot
 $liveKitDirectory = Join-Path $projectRoot 'infrastructure\livekit'
 $functionEnvPath = Join-Path $projectRoot 'supabase\functions\.env'
 $liveKitEnvPath = Join-Path $liveKitDirectory '.env'
-$apiKey = 'parallel_' + [Convert]::ToHexString([Security.Cryptography.RandomNumberGenerator]::GetBytes(8)).ToLowerInvariant()
-$apiSecret = [Convert]::ToBase64String([Security.Cryptography.RandomNumberGenerator]::GetBytes(48)).Replace('+', '-').Replace('/', '_').TrimEnd('=')
+$apiKeyBytes = New-CryptographicBytes 8
+$apiKey = 'parallel_' + (($apiKeyBytes | ForEach-Object { $_.ToString('x2') }) -join '')
+$apiSecret = [Convert]::ToBase64String((New-CryptographicBytes 48)).Replace('+', '-').Replace('/', '_').TrimEnd('=')
 $webhookUrl = 'https://iwqczndtabzuxwcgrzfy.supabase.co/functions/v1/livekit-webhook'
 
 @"
@@ -39,9 +52,18 @@ if ($ConfigureSupabase) {
 }
 
 if ($StartServer) {
+  $dockerCommand = Get-Command docker.exe -ErrorAction SilentlyContinue
+  $dockerExecutable = if ($dockerCommand) {
+    $dockerCommand.Source
+  } else {
+    Join-Path $env:LOCALAPPDATA 'Programs\DockerDesktop\resources\bin\docker.exe'
+  }
+  if (-not (Test-Path -LiteralPath $dockerExecutable)) {
+    throw 'Docker CLI was not found. Install or start Docker Desktop, then try again.'
+  }
   Push-Location $liveKitDirectory
   try {
-    & docker compose up -d
+    & $dockerExecutable compose up -d
     if ($LASTEXITCODE -ne 0) { throw 'Docker could not start the LiveKit server.' }
   } finally {
     Pop-Location
